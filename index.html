@@ -141,11 +141,11 @@
     }
 
     function getTextColor(s,h){
-      if (s < 90 && h === 18) return "#ffffff";
-      if (s >= 110 && h === 18) return "#000000";
-      if (s < 45 && h === 9) return "#ffffff";
-      if (s > 55 && h === 9) return "#000000";
+      if (s < 90 && h === 18 || s >= 110 && h === 18) return "#ffffff";
+      if (s < 45 && h === 9 || s >= 55 && h === 9) return "#ffffff";
+      return "#000000";
     }
+    
     courses.forEach(c => {
       const [name, score, date, lat, lng, holes] = c;
       const color = getColor(score,holes);
@@ -180,6 +180,7 @@
 </body>
 
 </html>
+
 
 
 
