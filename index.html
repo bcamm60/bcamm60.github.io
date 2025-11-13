@@ -130,16 +130,13 @@
     ];
 
     function getColor(s,h) {
-      if (h == 18){
-      if (s < 90 ) return "#007500";
-      if (s < 100 ) return "#00ff00";
-      if (s < 110 ) return "#ff8800";
-      }
-      if (h == 9){
-      if (s < 45 ) return "#007500";
-      if (s < 50 ) return "#00ff00";
-      if (s < 55 ) return "#ff8800";
-      }
+
+      if (s < 90 && h === 18) return "#007500";
+      if (s < 100 && h === 18) return "#00ff00";
+      if (s < 110 && h === 18 ) return "#ff8800";
+      if (s < 45 && h === 9) return "#007500";
+      if (s < 50 && h === 9) return "#00ff00";
+      if (s < 55 && h === 9 ) return "#ff8800";
       return "#ff0000";
     }
 
@@ -176,6 +173,7 @@
 </body>
 
 </html>
+
 
 
 
