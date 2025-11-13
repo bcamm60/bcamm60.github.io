@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>mead•wiki — Golf</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="mead•wiki — Golf" />
+  <meta property="og:description" content="Personal Bests" />
+  <meta property="og:image" content="https://mead.wiki/meadolini.jpg" />
+  <meta property="og:url" content="https://mead.wiki/golf.html" />
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    body{margin:0;padding:0;font-family:system-ui,sans-serif;background:#000}
+    #map{height:100vh}
+    .legend{position:absolute;bottom:20px;left:20px;background:rgba(0,0,0,0.75);color:#fff;padding:12px 16px;border-radius:12px;z-index:1000;font-size:14px;line-height:1.8;backdrop-filter:blur(4px)}
+    .leaflet-popup-content-wrapper{background:#fff!important;color:#000!important;border-radius:16px!important;box-shadow:0 8px 32px rgba(0,0,0,0.3)!important}
+    .leaflet-popup-content{margin:16px!important}
+    .popup-course{font-size:18px;font-weight:900;color:#000;margin:0 0 8px 0;letter-spacing:-0.5px}
+    .popup-score{font-size:24px;font-weight:900;margin:8px 0;line-height:1;letter-spacing:-2px}
+    .popup-date{font-size:16px;color:#444;font-weight:500}
+
+    /* Golf Ball + Colored Circle Overlay */
+    .golf-ball-marker {
+      width:36px;height:36px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      filter:drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+    }
+    .golf-ball-marker img {
+      width:100%;height:100%;
+      object-fit:contain;
+      position:absolute;
+      top:0;left:0;
+      z-index:2;
+    }
+    .color-circle {
+      width:36px;height:36px;
+      border-radius:50%;
+      position:absolute;
+      top:0;left:0;
+      z-index:1;
+    }
+    .golf-ball-score {
+      position:relative;
+      font:bold 16px/1 system-ui;
+      z-index:3;
+      text-shadow:0 1px 2px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="legend">
+    <b>Score Legend</b><br>
+    <span style="color:#007500">■</span> &lt;90  •  <span style="color:#00ff00">■</span> 90–99  •  <span style="color:#ff8800">■</span> 100–109  •  <span style="color:#ff0000">■</span> 110+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([40.25, -76.3], 9);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+      attribution: '© CartoDB',
+      opacity: 0.3
+    }).addTo(map);
+
+    const courses = [
+      ["Allentown Municipal",109,"7/5/2021",40.5976204778135,-75.5335842953608],
+      ["Arrowhead",105,"4/9/2024",40.3082019763818,-75.7600145509471],
+      ["Berkleigh",92,"10/4/2025",40.4958624729524,-75.8188707303709],
+      ["Blackwood",109,"8/31/2021",40.2460184423154,-75.7433849374569],
+      ["Blue Mountain",102,"5/29/2023",40.4599097555489,-76.4002885734154],
+      ["Broad Run",103,"10/20/2024",39.9525243020060,-75.7039157787771],
+      ["Butter Valley",98,"8/16/2025",40.3966373339681,-75.5623733988304],
+      ["Chapel Hill",87,"8/22/2025",40.2650251204201,-76.0334490869121],
+      ["Crossgates",95,"11/2/2025",39.9914823477038,-76.3493207604591],
+      ["Fairview",102,"7/26/2025",40.2856188052635,-76.4302136229393],
+      ["Flying Hills",86,"9/15/2025",40.2813631765983,-75.9208176525177],
+      ["Four Seasons",96,"5/17/2025",40.06800619983003,-76.4105164158831],
+      ["Foxchase",89,"8/23/2025",40.2205240714908,-76.1358594488508],
+      ["Galen Hall",96,"8/15/2024",40.2970231809677,-76.1019150067669],
+      ["Golden Oaks",96,"7/19/2025",40.4223193999738,-75.8216893490914],
+      ["Green Acres",80,"8/11/2025",40.4810613013222,-76.1173159580705],
+      ["Hickory Valley | Ambassador",113,"10/7/2023",40.32096011560562,-75.57698104377009],
+      ["Hidden Valley",87,"7/12/2025",40.615070937706086,-76.27208646631543],
+      ["Honeybrook",97,"8/28/2024",40.0792437098939,-75.8878726641622],
+      ["Iron Valley",93,"9/27/2025",40.2707854987742,-76.3837983990745],
+      ["Lebanon Valley",86,"8/18/2025",40.4020283539657,-76.2930242887612],
+      ["Linfield National",101,"4/29/2024",40.2109716446560,-75.5760361022579],
+      ["Links at Gettysburg",106,"6/10/2024",39.7311592434751,-77.2234358985649],
+      ["Manor",88,"9/20/2025",40.2892763090081,-76.0430507001758],
+      ["Moccasin Run",107,"5/26/2025",39.9151472061755,-75.9722315967076],
+      ["Morgan Hill",107,"7/16/2024",40.6656539953146,-75.1985612427213],
+      ["Overlook",93,"9/13/2025",40.0817686214952,-76.3126200260628],
+      ["Pickering Valley",116,"6/3/2023",40.1015514172193,-75.5172307292443],
+      ["Pine Meadows",99,"8/24/2024",40.4093520146305,-76.4223699004120],
+      ["Pinecrest Lakes",124,"8/26/2023",41.0940710289955,-75.4292207236607],
+      ["Reading CC",93,"9/5/2025",40.3040814333734,-75.8471204609744],
+      ["Rich Maiden",88,"9/8/2025",40.4825428232548,-75.8756293776434],
+      ["Royal Manchester",112,"8/13/2024",40.0834824196753,-76.7006523139003],
+      ["Royal Oaks",97,"7/18/2025",40.3166766292611,-76.4656643850582],
+      ["Seaview | Bay",101,"6/14/2023",39.4494167244727,-74.4680129967168],
+      ["Seaview | Pines",115,"6/10/2025",39.4513160082296,-74.4788790613053],
+      ["Spring Hollow",97,"8/28/2022",40.1856504064117,-75.5742933157503],
+      ["Twin Ponds",103,"4/22/2025",40.2984615745024,-75.6203676678618],
+      ["Twisted Dune",124,"6/8/2022",39.3759042528926,-74.6295163723965],
+      ["Willow Hollow",90,"7/23/2024",40.3879883124870,-76.0068081943195],
+      ["World Tour Golf Links",105,"9/5/2021",33.7373942035643,-78.9104246008430]
+    ];
+
+    function getColor(s) {
+      if (s < 90) return "#007500";
+      if (s < 100) return "#00ff00";
+      if (s < 110) return "#ff8800";
+      return "#ff0000";
+    }
+
+    courses.forEach(c => {
+      const [name, score, date, lat, lng] = c;
+      const color = getColor(score);
+      const textColor = score < 90 || score >= 110 ? "#ffffff" : "#000000";
+
+      const iconHtml = `
+        <div class="golf-ball-marker">
+          <div class="color-circle" style="background:${color};"></div>
+          <img src="/golf/ball.svg" alt="Golf Ball">
+          <div class="golf-ball-score" style="color:${textColor};">${score}</div>
+        </div>
+      `;
+
+      const icon = L.divIcon({
+        className: "",
+        html: iconHtml,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      });
+
+      L.marker([lat, lng], {icon}).addTo(map)
+        .bindPopup(`
+          <div class="popup-course">${name}</div>
+          <div class="popup-score" style="color:${color}">${score}</div>
+          <div class="popup-date">${date}</div>
+        `, { maxWidth: 400 });
+    });
+
+    map.fitBounds(courses.map(c => [c[3], c[4]]), { padding: [60, 60] });
+  </script>
+</body>
+</html>
