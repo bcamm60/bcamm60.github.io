@@ -155,7 +155,7 @@
     
     courses.forEach(c => {
       const [name, score, date, lat, lng, holes,diff] = c;
-      const color = getColor(d);
+      const color = getColor(diff);
      /* const textColor = score < 90 || score >= 110 ? "#ffffff" : "#000000"; */
       const textColor = getTextColor(score,holes);
 
@@ -187,6 +187,7 @@
 </body>
 
 </html>
+
 
 
 
