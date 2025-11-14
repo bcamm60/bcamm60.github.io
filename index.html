@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <title>Camms — Golf</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta property="og:title" content="mead•wiki — Golf" />
+  <meta property="og:title" content="Camms — Golf" />
   <meta property="og:description" content="Personal Bests" />
-  <meta property="og:image" content="https://mead.wiki/meadolini.jpg" />
-  <meta property="og:url" content="https://mead.wiki/golf.html" />
+  <meta property="og:image" content="https://gofyco.com/golf.jpg" />
+  <meta property="og:url" content="https://gofyco.com/golf.html" />
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
@@ -150,7 +150,6 @@
     courses.forEach(c => {
       const [name, score, date, lat, lng, holes,diff] = c;
       const color = getColor(score,holes);
-     /* const textColor = score < 90 || score >= 110 ? "#ffffff" : "#000000"; */
       const textColor = getTextColor(score,holes);
 
       const iconHtml = `
@@ -181,6 +180,7 @@
 </body>
 
 </html>
+
 
 
 
