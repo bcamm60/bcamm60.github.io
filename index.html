@@ -128,7 +128,7 @@
       ["Arrowhead - Blue",52,"9/24/2021",40.30913305789751,-75.75975857444297,9,21.5],
       ["Woodbrier",48,"6/3/2024",39.51151190904294,-77.93983484656663,9,30]
     ];
-/*
+
     function getColor(s,h) {
 
       if (s < 90 && h === 18) return "#007500";
@@ -139,14 +139,8 @@
       if (s < 55 && h === 9 ) return "#ff8800";
       return "#ff0000";
     }
-*/
-    function getColor(d) {
-      
-      if (d < 15) return "#007500";
-      if (d < 25) return "#00ff00";
-      if (d < 35) return "#ff8800";
-      return "#ff0000";
-    }
+
+
     function getTextColor(s,h){
       if (s < 90 && h === 18 || s >= 110 && h === 18) return "#ffffff";
       if (s < 45 && h === 9 || s >= 55 && h === 9) return "#ffffff";
@@ -155,7 +149,7 @@
     
     courses.forEach(c => {
       const [name, score, date, lat, lng, holes,diff] = c;
-      const color = getColor(diff);
+      const color = getColor(score,holes);
      /* const textColor = score < 90 || score >= 110 ? "#ffffff" : "#000000"; */
       const textColor = getTextColor(score,holes);
 
@@ -187,6 +181,7 @@
 </body>
 
 </html>
+
 
 
 
